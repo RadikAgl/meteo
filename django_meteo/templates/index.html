@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="OK">
+</form>
+<div>
+    <h2>Current weather</h2>
+    <p>Temperature: {{ meteo_data.current.temperature|floatformat:0 }} Celcium</p>
+    <p>Wind speed up to: {{ meteo_data.current.wind_speed|floatformat:1 }} km/h</p>
+    <p>Relative humidity: {{ meteo_data.current.relative_humidity|floatformat:1 }} %</p>
+    <p>Probability of precipitation: {{ meteo_data.current.precipitation }} %</p>
+    <p>Surface pressure: {{ meteo_data.current.surface_pressure| floatformat:1 }} hPa</p>
+</div>
+<div>
+    <h2>7 days weather forecast</h2>
+    {% for item in meteo_data.daily %}
+        <h3>Date: {{ item.date|date:"M d, Y" }}</h3>
+        <p>Min temperature: {{ item.temperature_2m_min|floatformat:1 }}  degrees Celsius</p>
+        <p>Max temperature: {{ item.temperature_2m_max|floatformat:1 }}  degrees Celsius</p>
+        <p>Wind speed up to: {{ item.wind_speed_10m_max|floatformat:1 }} km/h</p>
+        <p>Sunrise: {{ item.sunrise }}</p>
+        <p>Sunset: {{ item.sunset }}</p>
+        <p>Probability of precipitation: {{ item.precipitation_probability_max|floatformat:1 }} %</p>
+        <p>Surface pressure: {{ item.surface_pressure_mean|floatformat:1 }} hPa</p>
+        <p>Relative humidity: {{ item.relative_humidity_2m_mean|floatformat:1 }} %</p>
+
+    {% endfor %}
+</div>
+</body>
+</html>
