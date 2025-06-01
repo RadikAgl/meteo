@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from django_meteo.app_meteo.models import UserMeteoRequestHistory
+
+admin.site.register(UserMeteoRequestHistory)

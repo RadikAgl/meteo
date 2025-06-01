@@ -19,5 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include(("app_meteo.urls", "app_meteo"), namespace="app_meteo")),
+    path("", include("app_meteo.urls")),
+    path("accounts/", include("accounts.urls")),
+    path("accounts/", include('django.contrib.auth.urls')),
 ]

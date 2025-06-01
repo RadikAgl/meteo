@@ -1,14 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %} Weather
+{% endblock %}
+
+{% block content %}
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="OK">
 </form>
+    
+    {% if last_city %}
+        <a href="{% url 'meteo'%}?last_city={{ last_city }}">Click here to view the weather for {{ last_city }}</a>
+    {%  endif %}
+
+{% if meteo_data %}
 <div>
     <h2>Current weather</h2>
     <p>Temperature: {{ meteo_data.current.temperature|floatformat:0 }} Celcium</p>
@@ -32,5 +37,5 @@
 
     {% endfor %}
 </div>
-</body>
-</html>
+{% endif %}
+{% endblock %}
