@@ -5,6 +5,7 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
+<div><a href="{% url 'meteo'%}">Main Page</a></div>
 <div>
 {% if request.user.is_authenticated %}
         Hi, {{ user.username }}!

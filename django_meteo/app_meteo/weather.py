@@ -1,3 +1,4 @@
+"""Модуль с функциями для запроса погоды из внешнего сервиса"""
 import requests
 import openmeteo_requests
 
@@ -85,7 +86,10 @@ def get_weather(city_name: str):
     openmeteo = openmeteo_requests.Client(session=retry_session)
 
     data = get_city_geodata(city_name)
-    coords = get_coords(data)
+    if data[0]:
+        coords = get_coords(data)
+    else:
+        return False, "Service is unavailable. Try again later."
     # Make sure all required weather variables are listed here
     # The order of variables in hourly or daily is important to assign them correctly below
     url = "https://api.open-meteo.com/v1/forecast"
@@ -113,7 +117,10 @@ def get_weather(city_name: str):
         ],
         "timezone": get_timezone(data),
     }
-    responses = openmeteo.weather_api(url, params=params)
+    try:
+        responses = openmeteo.weather_api(url, params=params)
+    except Exception:
+        return False, "Service is unavailable. Try again later."
 
     response = responses[0]
     current = response.Current()
@@ -138,4 +145,4 @@ def get_weather(city_name: str):
     daily_dataframe = get_forecast_data(response)
 
     res["daily"] = daily_dataframe.to_dict("records")
-    return res
+    return True, res

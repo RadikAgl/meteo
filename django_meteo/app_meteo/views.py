@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.db.models import Count
+from django.contrib import messages
 
 from rest_framework import generics
 
@@ -26,7 +27,8 @@ class MeteoView(View):
             context["last_city"] = last_city
         last_city_param = request.GET.get("last_city", "")
         if last_city_param:
-            context["meteo_data"] = get_weather(last_city_param)
+            meteo_data = get_weather(last_city_param)
+            context["meteo_data"] = meteo_data[1]
 
         return render(request, self.template_name, context)
 
@@ -37,11 +39,14 @@ class MeteoView(View):
             form_data = form.cleaned_data
             city = form_data["city_name"]
             meteo_data = get_weather(city)
+            if not meteo_data[0]:
+                messages.add_message(request, messages.INFO, meteo_data[1], extra_tags="unavailable_service")
+                return render(request, self.template_name, {"form": form})
             if request.user.is_authenticated:
                 UserMeteoRequestHistory.objects.create(user=request.user, city=city)
 
         return render(
-            request, self.template_name, {"form": form, "meteo_data": meteo_data}
+            request, self.template_name, {"form": form, "meteo_data": meteo_data[1]}
         )
 
 

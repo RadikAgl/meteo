@@ -4,6 +4,8 @@
 {% endblock %}
 
 {% block content %}
+
+<h2>Enter the name of the city where you want to get the weather</h2>
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="OK">
@@ -12,6 +14,13 @@
     {% if last_city %}
         <a href="{% url 'meteo'%}?last_city={{ last_city }}">Click here to view the weather for {{ last_city }}</a>
     {%  endif %}
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 {% if meteo_data %}
 <div>
