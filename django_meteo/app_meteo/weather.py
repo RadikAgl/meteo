@@ -10,13 +10,15 @@ import datetime
 
 def get_time(timestamps):
     """Извлекает время из временной метки"""
-    return datetime.datetime.fromtimestamp(int(timestamps)).strftime('%H:%M')
+    return datetime.datetime.fromtimestamp(int(timestamps)).strftime("%H:%M")
 
 
 def get_city_geodata(city_name: str) -> tuple[bool, dict]:
     """Получение геоданных по названию города"""
     try:
-        city = requests.get(url='https://geocoding-api.open-meteo.com/v1/search?name=' + city_name)
+        city = requests.get(
+            url="https://geocoding-api.open-meteo.com/v1/search?name=" + city_name
+        )
         location_data = city.json()
         result = True
     except Exception:
@@ -28,15 +30,15 @@ def get_city_geodata(city_name: str) -> tuple[bool, dict]:
 def get_coords(data: dict) -> dict:
     """Извлечение координат локации"""
 
-    longitude = data[1]['results'][0]['longitude']
-    latitude = data[1]['results'][0]['latitude']
+    longitude = data[1]["results"][0]["longitude"]
+    latitude = data[1]["results"][0]["latitude"]
 
     return {"longitude": longitude, "latitude": latitude}
 
 
 def get_timezone(data: dict) -> str:
     """Получение часового пояса местности"""
-    return data[1]['results'][0]['timezone']
+    return data[1]["results"][0]["timezone"]
 
 
 def get_forecast_data(response) -> pd.DataFrame:
@@ -56,7 +58,7 @@ def get_forecast_data(response) -> pd.DataFrame:
         start=pd.to_datetime(daily.Time(), unit="s", utc=True),
         end=pd.to_datetime(daily.TimeEnd(), unit="s", utc=True),
         freq=pd.Timedelta(seconds=daily.Interval()),
-        inclusive="left"
+        inclusive="left",
     )
 
     daily_data = {}
@@ -78,7 +80,7 @@ def get_forecast_data(response) -> pd.DataFrame:
 def get_weather(city_name: str):
     """Запрос погоды и обработка"""
     # Set up the Open-Meteo API client with cache and retry on error
-    cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
+    cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
     retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
     openmeteo = openmeteo_requests.Client(session=retry_session)
 
@@ -91,10 +93,25 @@ def get_weather(city_name: str):
     params = {
         "latitude": coords["latitude"],
         "longitude": coords["longitude"],
-        "daily": ["weather_code", "temperature_2m_min", "temperature_2m_max", "wind_speed_10m_max", "sunrise", "sunset",
-                  "precipitation_probability_max", "surface_pressure_mean", "relative_humidity_2m_mean"],
-        "current": ["temperature_2m", "relative_humidity_2m", "wind_speed_10m", "precipitation", "surface_pressure"],
-        "timezone": get_timezone(data)
+        "daily": [
+            "weather_code",
+            "temperature_2m_min",
+            "temperature_2m_max",
+            "wind_speed_10m_max",
+            "sunrise",
+            "sunset",
+            "precipitation_probability_max",
+            "surface_pressure_mean",
+            "relative_humidity_2m_mean",
+        ],
+        "current": [
+            "temperature_2m",
+            "relative_humidity_2m",
+            "wind_speed_10m",
+            "precipitation",
+            "surface_pressure",
+        ],
+        "timezone": get_timezone(data),
     }
     responses = openmeteo.weather_api(url, params=params)
 

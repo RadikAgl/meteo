@@ -15,9 +15,11 @@ class MeteoView(View):
         form = self.form_class()
         context = {"form": form}
         if request.user.is_authenticated:
-            last_city = UserMeteoRequestHistory.objects.filter(user=request.user).first()
+            last_city = UserMeteoRequestHistory.objects.filter(
+                user=request.user
+            ).first()
             context["last_city"] = last_city
-        last_city_param = request.GET.get('last_city', '')
+        last_city_param = request.GET.get("last_city", "")
         if last_city_param:
             context["meteo_data"] = get_weather(last_city_param)
 
@@ -33,4 +35,6 @@ class MeteoView(View):
             if request.user.is_authenticated:
                 UserMeteoRequestHistory.objects.create(user=request.user, city=city)
 
-        return render(request, self.template_name, {"form": form, "meteo_data": meteo_data})
+        return render(
+            request, self.template_name, {"form": form, "meteo_data": meteo_data}
+        )
