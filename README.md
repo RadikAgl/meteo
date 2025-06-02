@@ -19,9 +19,8 @@
    docker-compose up
    
    ```
-Выполните миграции
+Для применения миграций выполните
   ```shell
-   docker-compose exec web python manage.py makemigrations
    docker-compose exec web python manage.py migrate
    ```
 
@@ -29,4 +28,7 @@
   ```shell
    docker-compose exec web python manage.py createcuperuser
    ```
+
+В сервисе реализован api по адресу ```<host>/api``` для получения статистики сколько раз вводили какой город.
+
 

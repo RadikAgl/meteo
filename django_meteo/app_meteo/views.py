@@ -1,9 +1,14 @@
 from django.shortcuts import render
 from django.views.generic import View
+from django.db.models import Count
+
+from rest_framework import generics
 
 from app_meteo.forms import CityForm
 from app_meteo.models import UserMeteoRequestHistory
 from app_meteo.weather import get_weather
+
+from app_meteo.serializers import CityHistorySerializer
 
 
 class MeteoView(View):
@@ -38,3 +43,9 @@ class MeteoView(View):
         return render(
             request, self.template_name, {"form": form, "meteo_data": meteo_data}
         )
+
+
+class MeteoHistoryApi(generics.ListCreateAPIView):
+    http_method_names = ["get"]
+    queryset = UserMeteoRequestHistory.objects.values('city').order_by('city').annotate(count=Count('city'))
+    serializer_class = CityHistorySerializer
